@@ -2,7 +2,7 @@
 「WLOラズパイ倶楽部+α 音声認識エンジンJuliusでボイスコマンドに挑戦」
 
 ●Peatix イベント申し込みページ
-https://
+https://raspiplus190822.peatix.com/
 
 ●詳細
 WLOラズパイ倶楽部+αは、RaspberryPiやArduinoなどを使った 
