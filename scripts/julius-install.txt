@@ -1,4 +1,4 @@
-# tool install
+# tool install (P.9)
 sudo apt install build-essential zlib1g-dev libasound2-dev flex
 
 # make dir
@@ -14,29 +14,29 @@ cd julius
 make
 sudo make install
 
-# Check Julius
+# Check Julius (P.10)
 julius
 
-# Check audio device
+# Check audio device (P.11)
 lsusb
 arecord -l
 
-# set env
+# set env (P.12)
 export ALSADEV="plughw:1,0"
 
-# Volume command
+# Volume command (P.14)
 alsamixer
 
-# test record
+# test record (P.15)
 adintool -in mic -out file -filename test
 
-# Download dictation-kit
+# Download dictation-kit (P.16)
 cd /home/pi/Downloads
 wget https://osdn.net/dl/julius/dictation-kit-4.5.zip
 
 mv /home/pi/Downloads/dictation-kit-4.5.zip /home/pi/julius
 
-# exmand dictation-kit
+# exmand dictation-kit (P.17)
 cd /home/pi/julius
 unzip dictation-kit-4.5.zip
 cd dictation-kit-4.5
@@ -48,7 +48,7 @@ ln -s /usr/local/bin/adintool bin/linux
 ln -s /usr/local/bin/julius bin/linux
 ln -s /usr/local/bin/jcontrol bin/linux
 
-# Try demo-code
+# Try demo-code (P.18)
 cd /home/pi/Julius/dictation-kit-4.5 
 export ALSADEV="plughw:1,0"
 sh run-linux-gmm.sh
