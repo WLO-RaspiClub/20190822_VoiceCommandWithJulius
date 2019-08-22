@@ -1,0 +1,12 @@
+[Unit]
+Description=Julius
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/julius -C /home/pi/julius/mydict-mod.jconf
+Restart=always
+Environment=ALSADEV="plughw:1,0"
+
+[Install]
+WantedBy=default.target
+
