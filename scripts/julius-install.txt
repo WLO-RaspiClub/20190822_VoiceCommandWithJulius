@@ -49,7 +49,7 @@ ln -s /usr/local/bin/julius bin/linux
 ln -s /usr/local/bin/jcontrol bin/linux
 
 # Try demo-code (P.18)
-cd /home/pi/Julius/dictation-kit-4.5 
+cd /home/pi/ulius/dictation-kit-4.5 
 export ALSADEV="plughw:1,0"
 sh run-linux-gmm.sh
 
