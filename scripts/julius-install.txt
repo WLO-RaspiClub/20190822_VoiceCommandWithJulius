@@ -53,3 +53,155 @@ cd /home/pi/julius/dictation-kit-4.5
 export ALSADEV="plughw:1,0"
 sh run-linux-gmm.sh
 
+# dict one-word (P.21)
+cd /home/pi/julius
+yomi2voca.pl sample.yomi > sample.dict
+
+# mydict.sh
+#!/bin/sh
+ALSADEV="plughw:1,0"
+/usr/local/bin/julius \
+	-h /home/pi/julius/dictation-kit-4.5/model/phone_m/jnas-tri-3k16-gid.binhmm \
+	-hlist /home/pi/julius/dictation-kit-4.5/model/phone_m/logicalTri \
+	-input mic \
+	-48 \
+	-w $1
+  
+# one word exe(P.22) 
+cd /home/pi/julius
+sh mydict.sh sample.dict
+
+# sample2.grammer (P.24)
+S         : NS_B KIKI_N CONTROL_N NS_E
+KIKI_N    : KIKI
+CONTROL_N : CONTROL_ON
+CONTROL_N : CONTROL_OFF
+
+# sample2.yomi (P.24)
+%KIKI
+照明	しょーめー
+照明	しょうめー
+照明	しょーめい
+照明	しょうめい
+エアコン	えあこん
+ＬＥＤ	えるいーでぃ
+ＬＥＤ	えるいーでー
+ＬＥＤ	えるいーでぃー
+%CONTROL_ON
+つけて	つけて
+つける	つける
+オン	おん
+運転	うんてん
+%CONTROL_OFF
+けして	けして
+けす	けす
+オフ	おふ
+停止	ていし
+%NS_B
+<s>	silB
+%NS_E
+</s>	silE
+
+# make voca (P.25)
+cd /home/pi/julius
+yomi2voca.pl sample2.yomi > sample2.voca
+
+# make dict (P.25)
+mkdfa.pl sample2
+
+# mydict2.sh (P.26)
+#!/bin/sh
+/usr/local/bin/julius \
+	-h /home/pi/julius/dictation-kit-4.5/model/phone_m/jnas-tri-3k16-gid.binhmm \
+	-hlist /home/pi/julius/dictation-kit-4.5/model/phone_m/logicalTri \
+	-input mic \
+	-48 \
+	-gram /home/pi/julius/sample2
+
+# exec (P.26)
+cd /home/pi/julius
+sh mydict2.sh 
+
+# mydict-mod.jconf (P.29)
+-h /home/pi/julius/dictation-kit-4.5/model/phone_m/jnas-tri-3k16-gid.binhmm 
+-hlist /home/pi/julius/dictation-kit-4.5/model/phone_m/logicalTri 
+-input mic 
+-48 
+-w /home/pi/julius/sample.dict 
+-module
+
+# exec module mode (P.29)
+julius -C /home/pi/julius/mydict-mod.jconf
+
+# julius.service (P.30)
+[Unit]
+Description=Julius
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/julius -C /home/pi/julius/mydict-mod.jconf
+Restart=always
+Environment=ALSADEV="plughw:1,0"
+
+[Install]
+WantedBy=default.target
+
+# deploy service (P.30)
+sudo cp julius.service /etc/system/system/
+
+# start service (P.31)
+sudo systemctl start julius.service
+systemctl status julius.service
+
+# deploy service (P.32)
+sudo systemctl stop julius.service
+sudo systemctl enable julius.service
+sudo systemctl disable julius.service
+
+# test module (P.33)
+jcontrol localhost 10500
+
+# sample python (P.34)
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import socket
+import xml.etree.ElementTree as ET
+
+def main():
+  host = 'localhost'
+  port = 10500
+  client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  client.connect((host, port))
+
+  try:
+    data = ''
+    while 1:
+      if '</RECOGOUT>\n.' in data:
+        root = ET.fromstring('<?xml version="1.0"?>\n' + data[data.find('<RECOGOUT>'):].replace('\n.', ''))
+        for wp in root.findall('./SHYPO/WHYPO'):
+          command = wp.get('WORD')
+          score = float(wp.get('CM'))
+          if command == u'再生' and score >= 0.9:
+            print u'play'
+          elif command == u'プレイ' and score >= 0.996:
+            print u'play'
+          elif command == u'停止' and score >= 0.996:
+            print u'stop'
+          elif command == u'ストップ' and score >= 0.996:
+            print u'stop'
+          elif command == u'巻き戻し' and score >= 0.996:
+            print u'rew'
+          elif command == u'巻き戻り' and score >= 0.996:
+            print u'rew'
+        data = ''
+      else:
+        data = data + client.recv(1024)
+  except KeyboardInterrupt:
+    client.close()
+
+if __name__ == "__main__":
+  main()
+
+
+
+
