@@ -1,0 +1,52 @@
+# tool install
+sudo apt install build-essential zlib1g-dev libasound2-dev
+
+# make dir
+mkdir /home/pi/julius
+cd /home/pi/julius
+
+# git clone
+git clone https://github.com/julius-speech/julius.git
+
+# Build
+cd julius
+./configure --with-mictype=alsa --enable-pthread
+make
+sudo make install
+
+# Check audio device
+lsusb
+arecord -l
+
+# set env
+export ALSADEV="plughw:1,0"
+
+# Volume command
+alsamixer
+
+# test record
+adintool -in mic -out file -filename test
+
+# Download dictation-kit
+cd /home/pi/Downloads
+wget https://osdn.net/dl/julius/dictation-kit-4.5.zip
+
+mv /home/pi/Downloads/dictation-kit-4.5.zip /home/pi/julius
+
+# exmand dictation-kit
+cd /home/pi/julius
+unzip dictation-kit-4.5.zip
+cd dictation-kit-4.5
+
+# replace binary
+rm bin/linux/*
+ln -s /usr/local/bin/adinrec bin/linux
+ln -s /usr/local/bin/adintool bin/linux
+ln -s /usr/local/bin/julius bin/linux
+ln -s /usr/local/bin/jcontrol bin/linux
+
+# Try demo-code
+cd /home/pi/Julius/dictation-kit-4.5 
+export ALSADEV="plughw:1,0"
+sh run-linux-gmm.sh
+
