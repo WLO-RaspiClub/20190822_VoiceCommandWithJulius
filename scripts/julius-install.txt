@@ -147,7 +147,7 @@ Environment=ALSADEV="plughw:1,0"
 WantedBy=default.target
 
 # deploy service (P.30)
-sudo cp julius.service /etc/system/system/
+sudo cp julius.service /etc/systemd/system/
 
 # start service (P.31)
 sudo systemctl start julius.service
